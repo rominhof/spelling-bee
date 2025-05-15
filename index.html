@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spelling Bee</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background: #f0f4f8;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .word-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .word {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+    }
+    .used {
+      background: #ccc;
+      text-decoration: line-through;
+    }
+    .current-word {
+      font-size: 2rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Spelling Bee Word Picker</h1>
+  <div class="controls">
+    <button onclick="pickWord()">Sortear Palavra</button>
+    <button onclick="resetWords()">Resetar</button>
+    <button onclick="speakWord()">Ouvir Palavra</button>
+  </div>
+  <div class="current-word" id="currentWord">---</div>
+  <div class="word-list" id="wordList"></div>
+
+  <script>
+    const words = [
+      "back","bag","bat","bed","Ben","bit","Bib","Bid","Big","Bin","Bob","Bog","Box","Bud","Bug","Bun","Bus","But",
+      "Cab","Can","Cap","Cat","Cob","Cod","Cop","Cot","Cub","Cud","Dab","Dad","Dan","Deck","Did","Dig","Dim",
+      "Dip","Dog","Dock","Don","Dot","Duck","Dug","Fan","Fat","Fed","Fig","Fin","Fit","Fix","Fog","Fox","Fun",
+      "Gag","Gas","Gap","Get","God","Got","Gum","Gus","Had","Ham","Has","Hat","Hen","Hid","Him","Hip","His","Hit",
+      "Hog","Hop","Hug","Hum","Hut","Jab","Jack","Jam","Jan","Jet","Jig","Jim","Jip","Job","Jog","Jon","Jot","Jug",
+      "Kick","Kid","Kim","Kip","Kit","Lab","Lack","Lag","Lap","Led","Leg","Let","Lick","Lid","Lip","Lock","Log",
+      "Lot","Luck","Mad","Man","Map","Mat","Max","Meg","Met","Mix","Mob","Mock","Mom","Mop","Mud","Mug","Nag",
+      "Nan","Nap","Neck","Net","Nick","Nip","Nod","Not","Nut","Pack","Pad","Pam","Peg","Pen","Pet","Pick","Pig",
+      "Pin","Pit","Pod","Pop","Pot","Pug","Pup","Quack","Quick","Quit","Quiz","Rack","Rag","Ram","Ran","Rap",
+      "Rat","Red","Rib","Rick","Rid","Rig","Rim","Rip","Rob","Rock","Rod","Ron","Rot","Rut","Rub","Rug","Run",
+      "Sack","Sad","Sag","Sam","Sap","Sat","Sin","Sip","Sis","Sit","Six","Sob","Sock","Sod","Suck","Sum","Sun",
+      "Tab","Tack","Tag","Tap","Tax","Ted","Ten","Tick","Tim","Tin","Tip","Tock","Tom","Top","Tot","Tub","Tuck",
+      "Tug","Van","Vet","Vex","Vick","Vim","Wag","Wax","Web","Wed","Wet","Wick","Wig","Win","Wit","Yak","Yam",
+      "Yes","Yip","Yum","Zack","Zag","Zap","Zig","Zip","Acorn","Bade","Bake","Base","Cake","Came","Cane","Cape",
+      "Case","Cave","Dale","Date","Dave","Daze","Bee","Bike","Bite","Die","Dime","Dine","Dive","Bone","Code",
+      "Coke","Cone","Cope","Cove","Dome","Dose","Doze","Bute","Cube","Cute","Dune"
+    ];
+
+    let usedWords = [];
+
+    function renderWords() {
+      const list = document.getElementById("wordList");
+      list.innerHTML = "";
+      words.forEach(word => {
+        const span = document.createElement("span");
+        span.className = "word";
+        if (usedWords.includes(word)) span.classList.add("used");
+        span.innerText = word;
+        list.appendChild(span);
+      });
+    }
+
+    function pickWord() {
+      const available = words.filter(w => !usedWords.includes(w));
+      if (available.length === 0) {
+        alert("Todas as palavras foram usadas!");
+        return;
+      }
+      const chosen = available[Math.floor(Math.random() * available.length)];
+      usedWords.push(chosen);
+      document.getElementById("currentWord").innerText = chosen;
+      renderWords();
+    }
+
+    function resetWords() {
+      usedWords = [];
+      document.getElementById("currentWord").innerText = "---";
+      renderWords();
+    }
+
+    function speakWord() {
+      const word = document.getElementById("currentWord").innerText;
+      if (word === "---") return;
+      const utter = new SpeechSynthesisUtterance(word);
+      utter.lang = "en-US";
+      speechSynthesis.speak(utter);
+    }
+
+    renderWords();
+  </script>
+</body>
+</html>
