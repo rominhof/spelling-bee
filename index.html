@@ -17,7 +17,7 @@
       text-align: center;
       margin-bottom: 1rem;
     }
-    button, select {
+    button {
       margin: 0.5rem;
       padding: 0.5rem 1rem;
       font-size: 1rem;
@@ -35,10 +35,12 @@
       border: 1px solid #ccc;
       padding: 0.5rem 1rem;
       border-radius: 4px;
+      cursor: pointer;
     }
     .used {
       background: #ccc;
       text-decoration: line-through;
+      cursor: not-allowed;
     }
     .current-word {
       font-size: 2rem;
@@ -57,9 +59,6 @@
     <button onclick="pickWord()">Sortear Palavra</button>
     <button onclick="resetWords()">Resetar</button>
     <button onclick="speakWord()">Ouvir Palavra</button>
-    <select id="selectWord" onchange="chooseWord()">
-      <option value="">-- Escolher Palavra --</option>
-    </select>
   </div>
   <div class="current-word" id="currentWord">---</div>
   <div class="counter" id="counter">0 de 0 palavras usadas</div>
@@ -87,21 +86,17 @@
 
     function renderWords() {
       const list = document.getElementById("wordList");
-      const select = document.getElementById("selectWord");
       list.innerHTML = "";
-      select.innerHTML = '<option value="">-- Escolher Palavra --</option>';
       words.forEach(word => {
         const span = document.createElement("span");
         span.className = "word";
-        if (usedWords.includes(word)) span.classList.add("used");
+        if (usedWords.includes(word)) {
+          span.classList.add("used");
+        } else {
+          span.onclick = () => chooseWord(word);
+        }
         span.innerText = word;
         list.appendChild(span);
-
-        const option = document.createElement("option");
-        option.value = word;
-        option.innerText = word;
-        option.disabled = usedWords.includes(word);
-        select.appendChild(option);
       });
       updateCounter();
     }
@@ -113,14 +108,10 @@
         return;
       }
       const chosen = available[Math.floor(Math.random() * available.length)];
-      usedWords.push(chosen);
-      document.getElementById("currentWord").innerText = chosen;
-      renderWords();
+      chooseWord(chosen);
     }
 
-    function chooseWord() {
-      const select = document.getElementById("selectWord");
-      const word = select.value;
+    function chooseWord(word) {
       if (!word || usedWords.includes(word)) return;
       usedWords.push(word);
       document.getElementById("currentWord").innerText = word;
