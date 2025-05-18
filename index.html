@@ -17,7 +17,7 @@
       text-align: center;
       margin-bottom: 1rem;
     }
-    button {
+    button, select {
       margin: 0.5rem;
       padding: 0.5rem 1rem;
       font-size: 1rem;
@@ -45,6 +45,10 @@
       text-align: center;
       margin-top: 1rem;
     }
+    .counter {
+      text-align: center;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -53,8 +57,12 @@
     <button onclick="pickWord()">Sortear Palavra</button>
     <button onclick="resetWords()">Resetar</button>
     <button onclick="speakWord()">Ouvir Palavra</button>
+    <select id="selectWord" onchange="chooseWord()">
+      <option value="">-- Escolher Palavra --</option>
+    </select>
   </div>
   <div class="current-word" id="currentWord">---</div>
+  <div class="counter" id="counter">0 de 0 palavras usadas</div>
   <div class="word-list" id="wordList"></div>  <script>
     const words = [
       "back","bag","bat","bed","Ben","bit","Bib","Bid","Big","Bin","Bob","Bog","Box","Bud","Bug","Bun","Bus","But",
@@ -79,14 +87,23 @@
 
     function renderWords() {
       const list = document.getElementById("wordList");
+      const select = document.getElementById("selectWord");
       list.innerHTML = "";
+      select.innerHTML = '<option value="">-- Escolher Palavra --</option>';
       words.forEach(word => {
         const span = document.createElement("span");
         span.className = "word";
         if (usedWords.includes(word)) span.classList.add("used");
         span.innerText = word;
         list.appendChild(span);
+
+        const option = document.createElement("option");
+        option.value = word;
+        option.innerText = word;
+        option.disabled = usedWords.includes(word);
+        select.appendChild(option);
       });
+      updateCounter();
     }
 
     function pickWord() {
@@ -98,6 +115,15 @@
       const chosen = available[Math.floor(Math.random() * available.length)];
       usedWords.push(chosen);
       document.getElementById("currentWord").innerText = chosen;
+      renderWords();
+    }
+
+    function chooseWord() {
+      const select = document.getElementById("selectWord");
+      const word = select.value;
+      if (!word || usedWords.includes(word)) return;
+      usedWords.push(word);
+      document.getElementById("currentWord").innerText = word;
       renderWords();
     }
 
@@ -113,6 +139,11 @@
       const utter = new SpeechSynthesisUtterance(word);
       utter.lang = "en-US";
       speechSynthesis.speak(utter);
+    }
+
+    function updateCounter() {
+      const counter = document.getElementById("counter");
+      counter.innerText = `${usedWords.length} de ${words.length} palavras usadas`;
     }
 
     renderWords();
